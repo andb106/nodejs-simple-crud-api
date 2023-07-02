@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon ./src/index.ts"
+    "start:dev": "nodemon ./src/index.ts",
+    "start:prod": "tsc && node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +27,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
+    "dotenv": "^16.3.1",
     "uuid": "^9.0.0"
   }
 }
