@@ -1,4 +1,6 @@
-interface User {
+import { v4 as uuidv4 } from 'uuid';
+
+export interface User {
   id: string;
   username: string;
   age: number;
@@ -24,5 +26,13 @@ export const getById = (id: string): Promise<User | undefined> => {
   return new Promise((resolve) => {
     const user = usersDataBase.find((item) => item.id === id);
     resolve(user);
+  });
+};
+
+export const create = (data: Omit<User, 'id'>): Promise<User> => {
+  const newUser = { id: uuidv4(), ...data };
+  usersDataBase.push(newUser);
+  return new Promise((resolve) => {
+    resolve(newUser);
   });
 };

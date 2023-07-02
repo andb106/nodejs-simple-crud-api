@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { getUserById, getUsers } from './userController';
+import { getUserById, getUsers, postUser } from './userController';
 import { createServerResponse } from './utils';
 
 const PORT = process.env.PORT || 4000;
@@ -14,6 +14,8 @@ const server = http.createServer((req, res) => {
   ) {
     const id = req.url.split('/')[3] || '';
     getUserById(req, res, id);
+  } else if (req.method === 'POST' && req.url === '/api/users') {
+    postUser(req, res);
   } else {
     createServerResponse(res, 404, { message: 'route not found' });
   }

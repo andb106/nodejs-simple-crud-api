@@ -1,6 +1,10 @@
 import { IncomingMessage, ServerResponse } from 'node:http';
 import * as UserModel from './userModel';
-import { createServerResponse } from './utils';
+import {
+  createServerResponse,
+  getRequestData,
+  validDataToCreateUser,
+} from './utils';
 import { validate } from 'uuid';
 
 export const getUsers = async (_req: IncomingMessage, res: ServerResponse) => {
@@ -31,5 +35,19 @@ export const getUserById = async (
     }
   } else {
     createServerResponse(res, 400, { message: 'userId is invalid (not uuid)' });
+  }
+};
+
+export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
+  try {
+    const data = await getRequestData(req);
+    const validData = validDataToCreateUser(data);
+    if (!validData) throw new Error();
+    const newUser = await UserModel.create(validData);
+    createServerResponse(res, 201, newUser);
+  } catch (error) {
+    createServerResponse(res, 400, {
+      message: 'request body does not contain required fields',
+    });
   }
 };
