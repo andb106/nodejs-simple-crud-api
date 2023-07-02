@@ -1,5 +1,11 @@
 import http from 'node:http';
-import { getUserById, getUsers, postUser } from './userController';
+import {
+  deleteUserById,
+  getUserById,
+  getUsers,
+  postUser,
+  updateUser,
+} from './userController';
 import { createServerResponse } from './utils';
 
 const PORT = process.env.PORT || 4000;
@@ -16,6 +22,20 @@ const server = http.createServer((req, res) => {
     getUserById(req, res, id);
   } else if (req.method === 'POST' && req.url === '/api/users') {
     postUser(req, res);
+  } else if (
+    req.method === 'PUT' &&
+    req.url?.startsWith('/api/users/') &&
+    req.url.split('/').length === 4
+  ) {
+    const id = req.url.split('/')[3] || '';
+    updateUser(req, res, id);
+  } else if (
+    req.method === 'DELETE' &&
+    req.url?.startsWith('/api/users/') &&
+    req.url.split('/').length === 4
+  ) {
+    const id = req.url.split('/')[3] || '';
+    deleteUserById(req, res, id);
   } else {
     createServerResponse(res, 404, { message: 'route not found' });
   }

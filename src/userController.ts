@@ -21,20 +21,11 @@ export const getUserById = async (
   res: ServerResponse,
   id: string,
 ) => {
-  if (validate(id)) {
-    try {
-      const user = await UserModel.getById(id);
-
-      user
-        ? createServerResponse(res, 200, user)
-        : createServerResponse(res, 404, {
-            message: `user with ${id} doesn't exist`,
-          });
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
-    createServerResponse(res, 400, { message: 'userId is invalid (not uuid)' });
+  try {
+    const user = await UserModel.getById(id);
+    handleResponseByValidationId(id, res, user, 200);
+  } catch (error) {
+    console.log('from getUserById', error);
   }
 };
 
@@ -49,5 +40,54 @@ export const postUser = async (req: IncomingMessage, res: ServerResponse) => {
     createServerResponse(res, 400, {
       message: 'request body does not contain required fields',
     });
+  }
+};
+
+export const updateUser = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+  id: string,
+) => {
+  try {
+    const data = await getRequestData(req);
+    const validData = validDataToCreateUser(data);
+    if (!validData) throw new Error();
+
+    const updatedUser = await UserModel.updateUser(id, validData);
+    handleResponseByValidationId(id, res, updatedUser, 200);
+  } catch (error) {
+    createServerResponse(res, 400, {
+      message: 'request body does not contain required fields',
+    });
+  }
+};
+
+export const deleteUserById = async (
+  _req: IncomingMessage,
+  res: ServerResponse,
+  id: string,
+) => {
+  try {
+    const user = await UserModel.deleteUser(id);
+    handleResponseByValidationId(id, res, user, 204);
+  } catch (error) {
+    console.log('from getUserById', error);
+  }
+};
+
+const handleResponseByValidationId = (
+  id: string,
+  res: ServerResponse,
+  user: UserModel.User | undefined,
+  statusCodeToSuccess: number,
+) => {
+  if (validate(id)) {
+    user
+      ? createServerResponse(res, statusCodeToSuccess, user)
+      : createServerResponse(res, 404, {
+          message: `user with ${id} doesn't exist`,
+        });
+  } else {
+    createServerResponse(res, 400, { message: 'userId is invalid (not uuid)' });
   }
 };

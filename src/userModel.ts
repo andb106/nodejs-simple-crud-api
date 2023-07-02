@@ -7,7 +7,7 @@ export interface User {
   hobbies: string[];
 }
 
-const usersDataBase: User[] = [
+let usersDataBase: User[] = [
   {
     id: '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed',
     username: '123',
@@ -34,5 +34,25 @@ export const create = (data: Omit<User, 'id'>): Promise<User> => {
   usersDataBase.push(newUser);
   return new Promise((resolve) => {
     resolve(newUser);
+  });
+};
+
+export const updateUser = (
+  id: string,
+  data: Omit<User, 'id'>,
+): Promise<User | undefined> => {
+  return new Promise((resolve) => {
+    const userIndex = usersDataBase.findIndex((user) => user.id === id);
+    usersDataBase[userIndex] = { id, ...data };
+    resolve(usersDataBase[userIndex]);
+  });
+};
+
+export const deleteUser = (id: string): Promise<User | undefined> => {
+  return new Promise((resolve) => {
+    const userIndex = usersDataBase.findIndex((user) => user.id === id);
+    const deletedUser = usersDataBase[userIndex];
+    usersDataBase = usersDataBase.filter((user) => user.id !== id);
+    resolve(deletedUser);
   });
 };
